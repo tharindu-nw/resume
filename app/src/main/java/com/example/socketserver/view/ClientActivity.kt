@@ -1,5 +1,6 @@
 package com.example.socketserver.view
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.socketserver.R
@@ -97,5 +98,14 @@ class ClientActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    override fun onBackPressed() {
+        startActivity(
+            Intent(this, HomeActivity::class.java)
+                .apply {
+                })
+        finish()
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
     }
 }

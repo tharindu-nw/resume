@@ -13,6 +13,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".view.SocketClientActivity" />
+        <activity
+            android:name=".view.SocketServerActivity"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="www.youtube.com"
+                    android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
         <activity android:name=".view.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +35,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.ClientActivity" />
-        <activity android:name=".view.ServerActivity" />
+        <activity android:name=".view.ServerActivity"
+                  android:launchMode="singleTop" />
     </application>
 
 </manifest>

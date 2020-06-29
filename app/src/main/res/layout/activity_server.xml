@@ -22,12 +22,18 @@
         android:layout_height = "wrap_content"
         android:layout_below = "@+id/tvPort"
         android:textAppearance = "@style/Base.TextAppearance.AppCompat.Medium" />
+    <Button
+        android:id = "@+id/btnBack"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:layout_below="@id/tvConnectionStatus"
+        android:text = "Back" />
     <TextView
         android:id = "@+id/tvMessages"
         android:layout_width = "match_parent"
         android:layout_height = "wrap_content"
-        android:layout_above = "@+id/etMessage"
-        android:layout_below = "@+id/tvConnectionStatus"
+        android:layout_below = "@+id/btnBack"
+        android:layout_above="@id/etMessage"
         android:textAppearance = "@style/Base.TextAppearance.AppCompat.Medium" />
     <EditText
         android:id = "@+id/etMessage"

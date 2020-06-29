@@ -1,11 +1,14 @@
 package com.example.socketserver.view
 
 import android.content.Context
+import android.content.Intent
 import android.net.wifi.WifiManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.util.Log
 import com.example.socketserver.R
+import com.example.socketserver.util.Constants
 import kotlinx.android.synthetic.main.activity_server.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -24,6 +27,9 @@ class ServerActivity : AppCompatActivity() {
 
     private lateinit var output : PrintWriter
     private lateinit var input : BufferedReader
+
+    private var fromHome = true
+    private var youtubeLink = ""
 
     companion object {
         var SERVER_IP = ""
@@ -52,6 +58,29 @@ class ServerActivity : AppCompatActivity() {
                     )
                 ).start()
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        try{
+            super.onNewIntent(intent)
+            setIntent(intent)
+        }catch (e : Exception){
+            Log.e("E:onNewIntent", e.message)
+        }
+    }
+
+    override fun onResume() {
+        try{
+            super.onResume()
+            val origin = intent.getIntExtra(Constants.ORIGIN, 0)
+            if(origin != HomeActivity.HOME){
+                fromHome = false
+                youtubeLink = intent.getStringExtra(Intent.EXTRA_TEXT)
+                etMessage.text = SpannableStringBuilder(youtubeLink)
+            }
+        }catch (e : Exception){
+            Log.e("E:onNewIntent", e.message)
         }
     }
 
@@ -143,5 +172,13 @@ class ServerActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this, HomeActivity::class.java)
+            .apply {
+            })
+        finish()
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
     }
 }

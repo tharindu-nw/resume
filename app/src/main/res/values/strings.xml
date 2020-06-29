@@ -2,4 +2,8 @@
     <string name="app_name">SocketServer</string>
     <string name="btn_txt_Home_Send">Send</string>
     <string name="btn_txt_Home_receive">Receive</string>
+    <string name="tv_placeholder_message" translatable="true">Waiting for message from client…</string>
+    <string name="tv_placeholder_ip_address" translatable="true">Server running on…</string>
+    <string name="edtxt_hint_ip">Enter IP Address</string>
+    <string name="btn_txt_Client_connect">Connect</string>
 </resources>
