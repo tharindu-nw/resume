@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SocketServer</string>
+    <string name="btn_txt_Home_Send">Send</string>
+    <string name="btn_txt_Home_receive">Receive</string>
+</resources>
