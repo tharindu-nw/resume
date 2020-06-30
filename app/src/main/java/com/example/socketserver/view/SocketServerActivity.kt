@@ -24,7 +24,7 @@ class SocketServerActivity : AppCompatActivity() {
 
     private var fromHome = true
     private var youtubeLink = ""
-    private var outLink = ""
+    private var outLink = "default"
     private var multiFormatWriter = MultiFormatWriter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +45,7 @@ class SocketServerActivity : AppCompatActivity() {
         }catch (e : Exception){
             Log.e("E:QR", e.message)
         }
+        StartListening(this).execute()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -75,17 +76,26 @@ class SocketServerActivity : AppCompatActivity() {
     class StartListening(private val activity: SocketServerActivity) : AsyncTask<Any?, Any?, Any?>(){
         override fun doInBackground(vararg params: Any?) {
             while(true){
-                val client = activity.server.accept()
-                activity.tvServerMessage.text = "Client connected: ${client.inetAddress.hostAddress}"
+                try{
+                    val client = activity.server.accept()
+                    activity.runOnUiThread{
+                        activity.tvServerMessage.text = "Client connected: ${client.inetAddress.hostAddress}"
+                    }
 
-                val writer = client.getOutputStream()
-                writer.write((activity.outLink).toByteArray(Charset.defaultCharset()))
+                    val writer = client.getOutputStream()
+                    writer.write((activity.outLink).toByteArray(Charset.defaultCharset()))
 
-                val scanner = Scanner(client.inputStream)
-                while(scanner.hasNextLine()){
-                    activity.tvMessage.text = scanner.nextLine()
-                    break
+                    val scanner = Scanner(client.inputStream)
+                    while(scanner.hasNextLine()){
+                        activity.runOnUiThread {
+                            activity.tvMessage.text = scanner.nextLine()
+                        }
+                        break
+                    }
+                }catch (e : Exception){
+                    Log.e("E:Lis", e.message)
                 }
+
             }
         }
     }

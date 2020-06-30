@@ -13,27 +13,12 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:text="Hello World!"
-        app:layout_constraintBottom_toTopOf="@+id/edtxtIp"
+        app:layout_constraintBottom_toTopOf="@+id/btnConnect"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
-
-    <EditText
-        android:id="@+id/edtxtIp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="@string/edtxt_hint_ip"
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/btnConnect"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv1" />
 
     <Button
         android:id="@+id/btnConnect"
@@ -43,7 +28,8 @@
         android:text="@string/btn_txt_Client_connect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtxtIp" />
+        app:layout_constraintTop_toBottomOf="@+id/tv1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
