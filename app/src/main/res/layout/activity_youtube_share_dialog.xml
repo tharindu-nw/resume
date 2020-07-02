@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:context=".view.YoutubeShareDialogActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.6"
+        android:background="#FF000000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/colorWhitePure"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvTitleDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/opensans_light"
+            android:text="@string/tv_title_dialog"
+            android:textColor="@color/colorGrayJet"
+            android:textSize="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLinkYT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/opensans_regular"
+            android:text="your link here"
+            android:textAlignment="center"
+            android:textColor="@color/colorGreenLight"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitleDialog" />
+
+        <TextView
+            android:id="@+id/tvTimeStamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/opensans_light"
+            android:text="@string/tv_time_dialog"
+            android:textColor="@color/colorGrayJet"
+            android:textSize="16dp"
+            app:layout_constraintStart_toStartOf="@+id/tvTitleDialog"
+            app:layout_constraintTop_toBottomOf="@+id/tvLinkYT" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.33" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.67" />
+
+        <EditText
+            android:id="@+id/edtxtHr"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_green_outline"
+            android:ems="10"
+            android:fontFamily="@font/opensans_light"
+            android:gravity="right"
+            android:hint="00"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingStart="8dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="10dp"
+            android:textAlignment="gravity"
+            android:textColor="@color/colorBlack"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/tvHr"
+            app:layout_constraintTop_toBottomOf="@+id/tvTimeStamp" />
+
+        <TextView
+            android:id="@+id/tvHr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/opensans_light"
+            android:text="@string/tv_hr_dialog"
+            android:textColor="@color/colorGreenLight"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/edtxtHr"
+            app:layout_constraintEnd_toStartOf="@+id/guideline1" />
+
+        <EditText
+            android:id="@+id/edtxtMin"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_green_outline"
+            android:ems="10"
+            android:fontFamily="@font/opensans_light"
+            android:gravity="right"
+            android:hint="00"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingStart="8dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="10dp"
+            android:textAlignment="gravity"
+            android:textColor="@color/colorBlack"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/tvMin"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@+id/tvHr"
+            app:layout_constraintTop_toTopOf="@+id/edtxtHr" />
+
+        <TextView
+            android:id="@+id/tvMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/opensans_light"
+            android:text="@string/tv_min_dialog"
+            android:textColor="@color/colorGreenLight"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/edtxtMin"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toEndOf="@+id/edtxtMin" />
+
+        <EditText
+            android:id="@+id/edtxtSec"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_green_outline"
+            android:ems="10"
+            android:fontFamily="@font/opensans_light"
+            android:gravity="right"
+            android:hint="00"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingStart="8dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="10dp"
+            android:textAlignment="gravity"
+            android:textColor="@color/colorBlack"
+            android:textSize="16dp"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
+            app:layout_constraintTop_toTopOf="@+id/edtxtMin" />
+
+        <TextView
+            android:id="@+id/tvMin2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/opensans_light"
+            android:text="@string/tv_sec_dialog"
+            android:textColor="@color/colorGreenLight"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/edtxtSec"
+            app:layout_constraintStart_toEndOf="@+id/edtxtSec" />
+
+        <Button
+            android:id="@+id/btnShare"
+            style="@style/button_text_appearance"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_btn_green"
+            android:fontFamily="@font/opensans_regular"
+            android:text="@string/btn_share_dialog"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhitePure"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edtxtSec" />
+
+        <Button
+            android:id="@+id/btnShareWT"
+            style="@style/button_text_appearance"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_green_outline"
+            android:fontFamily="@font/opensans_regular"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/btn_shareWT_dialog"
+            android:textAllCaps="false"
+            android:textColor="@color/colorGreenLight"
+            app:layout_constraintEnd_toStartOf="@+id/btnShare"
+            app:layout_constraintTop_toTopOf="@+id/btnShare" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

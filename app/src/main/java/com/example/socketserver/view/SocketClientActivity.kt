@@ -1,7 +1,6 @@
 package com.example.socketserver.view
 
 import android.content.Intent
-import android.drm.DrmStore
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -59,9 +58,9 @@ class SocketClientActivity : AppCompatActivity() {
                 val scanner = Scanner(client.inputStream)
                 while(scanner.hasNextLine()){
                     ytLink = scanner.nextLine()
-                    runOnUiThread {
+                    /*runOnUiThread {
                         tv1.text = ytLink
-                    }
+                    }*/
                     break
                 }
                 client.close()

@@ -34,11 +34,19 @@ class SocketServerActivity : AppCompatActivity() {
         val myIp = getIPAddress(true)
 
         server = ServerSocket(9990)
-        tvIP.text = "Server Started on $myIp port(${server.localPort})"
+
+        val origin = intent.getIntExtra(Constants.ORIGIN, 0)
+        if(origin == YoutubeShareDialogActivity.YT_SHARE){
+            fromHome = false
+            youtubeLink = intent.getStringExtra(Constants.LINK)
+            outLink = youtubeLink + "\n"
+            tvShareName.text = SpannableStringBuilder(youtubeLink)
+            StartListening(this).execute()
+        }
 
         val qrText = "$myIp,${server.localPort}"
         try{
-            val bitMatrix = multiFormatWriter.encode(qrText, BarcodeFormat.QR_CODE, 200, 200)
+            val bitMatrix = multiFormatWriter.encode(qrText, BarcodeFormat.QR_CODE, 150, 150)
             val barcodeEncoder = BarcodeEncoder()
             val bitmap = barcodeEncoder.createBitmap(bitMatrix)
             imgQR.setImageBitmap(bitmap)
@@ -48,50 +56,25 @@ class SocketServerActivity : AppCompatActivity() {
         StartListening(this).execute()
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        try{
-            super.onNewIntent(intent)
-            setIntent(intent)
-        }catch (e : Exception){
-            Log.e("E:onNewIntent", e.message)
-        }
-    }
-
-    override fun onResume() {
-        try{
-            super.onResume()
-            val origin = intent.getIntExtra(Constants.ORIGIN, 0)
-            if(origin != HomeActivity.HOME){
-                fromHome = false
-                youtubeLink = intent.getStringExtra(Intent.EXTRA_TEXT)
-                outLink = youtubeLink + "\n"
-                tvLink.text = SpannableStringBuilder(youtubeLink)
-                StartListening(this).execute()
-            }
-        }catch (e : Exception){
-            Log.e("E:onResume", e.message)
-        }
-    }
-
     class StartListening(private val activity: SocketServerActivity) : AsyncTask<Any?, Any?, Any?>(){
         override fun doInBackground(vararg params: Any?) {
             while(true){
                 try{
                     val client = activity.server.accept()
-                    activity.runOnUiThread{
+                    /*activity.runOnUiThread{
                         activity.tvServerMessage.text = "Client connected: ${client.inetAddress.hostAddress}"
-                    }
+                    }*/
 
                     val writer = client.getOutputStream()
                     writer.write((activity.outLink).toByteArray(Charset.defaultCharset()))
 
-                    val scanner = Scanner(client.inputStream)
+                    /*val scanner = Scanner(client.inputStream)
                     while(scanner.hasNextLine()){
                         activity.runOnUiThread {
                             activity.tvMessage.text = scanner.nextLine()
                         }
                         break
-                    }
+                    }*/
                 }catch (e : Exception){
                     Log.e("E:Lis", e.message)
                 }

@@ -1,7 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#1BA985</color>
+    <color name="colorPrimaryDark">#43CCA9</color>
+    <color name="colorAccent">#1BA985</color>
+
+    <color name="colorGrayJet">#000000</color>
+    <color name="colorGrayLight">#D7D7D8</color>
+    <color name="colorGrayLighter">#F8F6F6</color>
+    <color name="colorGreyBorder">#707070</color>
+
+
+    <color name="colorBlueOcean">#007AC2</color>
+    <color name="colorBlueBolt">#00C2F3</color>
+    <color name="colorBlueLighter">#C4E3F5</color>
+
+
+    <color name="colorGreenLight">#43CCA9</color>
+    <color name="colorGreenLighter">#C2E6DD</color>
+    <color name="colorGreenLightest">#E3F9F4</color>
+
+    <color name="colorYellow">#FCB901</color>
+    <color name="colorRed">#D40000</color>
+    <color name="colorPink">#F1CCCC</color>
+
+
+    <!--font colors-->
+    <color name="colorBlueIris">#00BCD4</color>
+    <color name="colorGrayDark">#808080</color>
+    <color name="colorGray">#B7B6B6</color>
+    <color name="colorGreyNormal">#EEEEEE</color>
     <color name="colorWhitePure">#FFFFFF</color>
+    <color name="colorLightBlack">#363636</color>
+    <color name="colorShare">#445EEA</color>
+    <color name="colorReceive">#FF4F5A</color>
+
+    <color name="colorBlack">#000000</color>
+    <color name="colorGrayTransparent">#363636</color>
 </resources>

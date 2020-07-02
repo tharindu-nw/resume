@@ -21,6 +21,10 @@ class HomeActivity : AppCompatActivity() {
         btnReceiveHome.setOnClickListener {
             openSocket()
         }
+
+        btnShareHome.setOnClickListener {
+            openShare()
+        }
     }
 
     private fun openServer(){
@@ -46,6 +50,13 @@ class HomeActivity : AppCompatActivity() {
         }catch (err : Exception){
             Log.e("Server", err.message)
         }
+    }
+
+    private fun openShare(){
+        startActivity(Intent(this, YoutubeShareDialogActivity::class.java)
+            .apply {
+            })
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 
     override fun onBackPressed() {
