@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import com.example.socketserver.R
 import com.example.socketserver.util.Constants
+import com.example.socketserver.util.Parcel
 import kotlinx.android.synthetic.main.activity_youtube_share_dialog.*
 import java.lang.NumberFormatException
 
@@ -35,7 +36,9 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
 
         btnShareWT.setOnClickListener {
             //if there is no time input, share the link straight through
-            openServer()
+            val message = Parcel(link)
+            message.setIsYTLink(true)
+            openServer(message)
         }
 
         edtxtHr.addTextChangedListener(object : TextWatcher {
@@ -94,7 +97,9 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
 
             //validate the input values
             if(hrs==0 && mins==0 && secs==0){
-                openServer()
+                val message = Parcel(link)
+                message.setIsYTLink(true)
+                openServer(message)
             }else if(mins>59 || mins<0){
                 edtxtMin.isActivated = true
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
@@ -120,19 +125,28 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
             link += "?t=${hrs}h${mins}m${secs}s"
         }else if(mins>0 && secs>0){
             link += "?t=${mins}m${secs}s"
+        }else if(hrs>0 && secs>0){
+            link += "?t=${hrs}h${secs}s"
+        }else if(hrs>0 && mins>0){
+            link += "?t=${hrs}h${mins}m"
         }else if(secs>0){
             link += "?t=${secs}s"
+        }else if(mins>0){
+            link += "?t=${mins}m"
+        }else if(hrs>0){
+            link += "?t=${hrs}h"
         }
-        openServer()
+        val message = Parcel(link)
+        message.setIsYTLink(true)
+        openServer(message)
     }
 
-    private fun openServer(){
+    private fun openServer(message: Parcel){
         try{
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             startActivity(Intent(this, SocketServerActivity::class.java)
                 .apply {
-                    putExtra(Constants.ORIGIN, YT_SHARE)
-                    putExtra(Constants.LINK, link)
+                    putExtra(Constants.MESSAGE, message)
                 })
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

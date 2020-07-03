@@ -8,10 +8,13 @@ import android.text.SpannableStringBuilder
 import android.util.Log
 import com.example.socketserver.R
 import com.example.socketserver.util.Constants
+import com.example.socketserver.util.Parcel
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.android.synthetic.main.activity_socket_server.*
+import java.io.ObjectOutputStream
 import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.nio.charset.Charset
@@ -22,9 +25,9 @@ class SocketServerActivity : AppCompatActivity() {
     var ipAddress = ""
     var server = ServerSocket()
 
-    private var fromHome = true
     private var youtubeLink = ""
-    private var outLink = "default"
+    private var pdfName = ""
+    private lateinit var messageParcel : Parcel
     private var multiFormatWriter = MultiFormatWriter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,12 +38,14 @@ class SocketServerActivity : AppCompatActivity() {
 
         server = ServerSocket(9990)
 
-        val origin = intent.getIntExtra(Constants.ORIGIN, 0)
-        if(origin == YoutubeShareDialogActivity.YT_SHARE){
-            fromHome = false
-            youtubeLink = intent.getStringExtra(Constants.LINK)
-            outLink = youtubeLink + "\n"
+        messageParcel = intent.getSerializableExtra(Constants.MESSAGE) as Parcel
+        if(messageParcel.isYTLink()){
+            youtubeLink = messageParcel.getText()
             tvShareName.text = SpannableStringBuilder(youtubeLink)
+            StartListening(this).execute()
+        }else if(messageParcel.isPdf()){
+            pdfName = messageParcel.getFileName()
+            tvShareName.text = SpannableStringBuilder(pdfName)
             StartListening(this).execute()
         }
 
@@ -61,20 +66,20 @@ class SocketServerActivity : AppCompatActivity() {
             while(true){
                 try{
                     val client = activity.server.accept()
-                    /*activity.runOnUiThread{
-                        activity.tvServerMessage.text = "Client connected: ${client.inetAddress.hostAddress}"
-                    }*/
 
-                    val writer = client.getOutputStream()
-                    writer.write((activity.outLink).toByteArray(Charset.defaultCharset()))
-
-                    /*val scanner = Scanner(client.inputStream)
-                    while(scanner.hasNextLine()){
+                    val snackbar = Snackbar.make(activity.imgShare, "Sending... Socket is busy, Please Wait", Snackbar.LENGTH_INDEFINITE)
+                    if(activity.messageParcel.isPdf()){
                         activity.runOnUiThread {
-                            activity.tvMessage.text = scanner.nextLine()
+                            snackbar.show()
                         }
-                        break
-                    }*/
+                    }
+                    val out = ObjectOutputStream(client.getOutputStream())
+                    out.writeObject(activity.messageParcel)
+                    out.flush()
+
+                    activity.runOnUiThread {
+                        if(snackbar.isShown) snackbar.dismiss()
+                    }
                 }catch (e : Exception){
                     Log.e("E:Lis", e.message)
                 }
