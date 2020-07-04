@@ -36,7 +36,7 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
 
         btnShareWT.setOnClickListener {
             //if there is no time input, share the link straight through
-            val message = Parcel(link)
+            val message = Parcel(link, false)
             message.setIsYTLink(true)
             openServer(message)
         }
@@ -97,7 +97,7 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
 
             //validate the input values
             if(hrs==0 && mins==0 && secs==0){
-                val message = Parcel(link)
+                val message = Parcel(link, false)
                 message.setIsYTLink(true)
                 openServer(message)
             }else if(mins>59 || mins<0){
@@ -136,7 +136,7 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
         }else if(hrs>0){
             link += "?t=${hrs}h"
         }
-        val message = Parcel(link)
+        val message = Parcel(link, false)
         message.setIsYTLink(true)
         openServer(message)
     }

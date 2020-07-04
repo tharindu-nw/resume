@@ -12,11 +12,22 @@ class Parcel : Serializable{
     private var isPdf = false
     private var isWebLink = false
 
-    constructor(link: String){
-        this.text = link
+    constructor(str: String, pdf: Boolean){
+        if(pdf){
+            this.fileName = str
+            this.isPdf = pdf
+        }else{
+            this.text = str
+        }
     }
 
-    constructor(inFile: ByteArray,  name: String){
+    constructor(name: String, page: Int){
+        this.fileName = name
+        this.pageNumber = page
+        this.isPdf = true
+    }
+
+    /*constructor(inFile: ByteArray,  name: String){
         this.file = inFile
         this.fileName = name
     }
@@ -25,7 +36,7 @@ class Parcel : Serializable{
         this.file = inFile
         this.fileName = name
         this.pageNumber = page
-    }
+    }*/
 
     public fun setIsYTLink(bool: Boolean){
         isYTLink = bool
@@ -50,6 +61,10 @@ class Parcel : Serializable{
 
     public  fun getText() : String {
         return text!!
+    }
+
+    public fun setFile(bytes: ByteArray){
+        file = bytes
     }
 
     public fun getFile() : ByteArray {

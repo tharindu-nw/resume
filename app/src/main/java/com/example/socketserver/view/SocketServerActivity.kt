@@ -1,6 +1,8 @@
 package com.example.socketserver.view
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +16,9 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.android.synthetic.main.activity_socket_server.*
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
 import java.io.ObjectOutputStream
 import java.net.NetworkInterface
 import java.net.ServerSocket
@@ -27,6 +32,7 @@ class SocketServerActivity : AppCompatActivity() {
 
     private var youtubeLink = ""
     private var pdfName = ""
+    private var fileUri : Uri? = null
     private lateinit var messageParcel : Parcel
     private var multiFormatWriter = MultiFormatWriter()
 
@@ -44,6 +50,7 @@ class SocketServerActivity : AppCompatActivity() {
             tvShareName.text = SpannableStringBuilder(youtubeLink)
             StartListening(this).execute()
         }else if(messageParcel.isPdf()){
+            fileUri = intent.getParcelableExtra(Constants.URI)
             pdfName = messageParcel.getFileName()
             tvShareName.text = SpannableStringBuilder(pdfName)
             StartListening(this).execute()
@@ -67,19 +74,20 @@ class SocketServerActivity : AppCompatActivity() {
                 try{
                     val client = activity.server.accept()
 
-                    val snackbar = Snackbar.make(activity.imgShare, "Sending... Socket is busy, Please Wait", Snackbar.LENGTH_INDEFINITE)
                     if(activity.messageParcel.isPdf()){
-                        activity.runOnUiThread {
-                            snackbar.show()
-                        }
+                        val snackbarFile = Snackbar.make(activity.imgShare, "Preparing File", Snackbar.LENGTH_INDEFINITE)
+                        activity.runOnUiThread { snackbarFile.show() }
+                        val file = activity.getBytes(activity, activity.fileUri!!)
+                        activity.messageParcel.setFile(file!!)
+                        activity.runOnUiThread { snackbarFile.dismiss() }
                     }
+                    val snackbar = Snackbar.make(activity.imgShare, "Sending... Socket is busy, Please Wait", Snackbar.LENGTH_INDEFINITE)
+                    activity.runOnUiThread { snackbar.show() }
                     val out = ObjectOutputStream(client.getOutputStream())
                     out.writeObject(activity.messageParcel)
                     out.flush()
 
-                    activity.runOnUiThread {
-                        if(snackbar.isShown) snackbar.dismiss()
-                    }
+                    activity.runOnUiThread { snackbar.dismiss() }
                 }catch (e : Exception){
                     Log.e("E:Lis", e.message)
                 }
@@ -116,6 +124,44 @@ class SocketServerActivity : AppCompatActivity() {
             }
         } catch (e: java.lang.Exception) { }
         return ""
+    }
+
+    private fun getBytes(context: Context, uri: Uri): ByteArray? {
+        val iStream = context.contentResolver.openInputStream(uri)
+        return try {
+            getBytes(iStream!!)
+        } finally {
+            // close the stream
+            try {
+                iStream!!.close()
+            } catch (ignored: IOException) {
+                /* do nothing */
+                ignored.printStackTrace()
+            }
+        }
+    }
+
+    private fun getBytes(inputStream: InputStream): ByteArray? {
+        var bytesResult: ByteArray? = null
+        val byteBuffer = ByteArrayOutputStream()
+        val bufferSize = 1024
+        val buffer = ByteArray(bufferSize)
+        try {
+            var len: Int
+            while (inputStream.read(buffer).also { len = it } != -1) {
+                byteBuffer.write(buffer, 0, len)
+            }
+            bytesResult = byteBuffer.toByteArray()
+        } finally {
+            // close the stream
+            try {
+                byteBuffer.close()
+            } catch (ignored: IOException) {
+                /* do nothing */
+                ignored.printStackTrace()
+            }
+        }
+        return bytesResult
     }
 
     override fun onBackPressed() {

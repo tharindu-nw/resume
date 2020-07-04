@@ -34,7 +34,7 @@ class PdfShareDialogActivity : AppCompatActivity() {
         try{
             fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
             fileName = getFileName(fileUri)
-            file = getBytes(this, fileUri)
+//            file = getBytes(this, fileUri)
             tvNamePdf.text = fileName ?: "File not found"
         }catch (e: IOException){
             Log.e("E:file", e.message)
@@ -47,9 +47,8 @@ class PdfShareDialogActivity : AppCompatActivity() {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-            if(file != null && fileName != null){
-                val message = Parcel(file!!, fileName!!)
-                message.setIsPdf(true)
+            if(fileName != null){
+                val message = Parcel(fileName!!, true)
                 openServer(message)
             }else{
                 Toast.makeText(this, "Error Reading File", Toast.LENGTH_LONG).show()
@@ -66,9 +65,8 @@ class PdfShareDialogActivity : AppCompatActivity() {
             if(edtxtPage.text.isNotEmpty()){
                 try{
                     pageNumber = edtxtPage.text.toString().toInt()
-                    if(file != null && fileName != null){
-                        val message = Parcel(file!!, fileName!!, pageNumber)
-                        message.setIsPdf(true)
+                    if(fileName != null){
+                        val message = Parcel(fileName!!, pageNumber)
                         openServer(message)
                     }else{
                         Toast.makeText(this, "Error Reading File", Toast.LENGTH_LONG).show()
@@ -76,6 +74,14 @@ class PdfShareDialogActivity : AppCompatActivity() {
                     }
                 }catch (e: NumberFormatException){
                     Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_LONG).show()
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                }
+            }else{
+                if(fileName != null){
+                    val message = Parcel(fileName!!, true)
+                    openServer(message)
+                }else{
+                    Toast.makeText(this, "Error Reading File", Toast.LENGTH_LONG).show()
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
             }
@@ -88,6 +94,7 @@ class PdfShareDialogActivity : AppCompatActivity() {
             startActivity(Intent(this, SocketServerActivity::class.java)
                 .apply {
                     putExtra(Constants.MESSAGE, message)
+                    putExtra(Constants.URI, fileUri)
                 })
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -111,41 +118,5 @@ class PdfShareDialogActivity : AppCompatActivity() {
         }
     } catch (e: Exception) {
         null
-    }
-
-    private fun getBytes(context: Context, uri: Uri): ByteArray? {
-        val iStream = context.contentResolver.openInputStream(uri)
-        return try {
-            getBytes(iStream!!)
-        } finally {
-            // close the stream
-            try {
-                iStream!!.close()
-            } catch (ignored: IOException) {
-                /* do nothing */
-            }
-        }
-    }
-
-    private fun getBytes(inputStream: InputStream): ByteArray? {
-        var bytesResult: ByteArray? = null
-        val byteBuffer = ByteArrayOutputStream()
-        val bufferSize = 1024
-        val buffer = ByteArray(bufferSize)
-        try {
-            var len: Int
-            while (inputStream.read(buffer).also { len = it } != -1) {
-                byteBuffer.write(buffer, 0, len)
-            }
-            bytesResult = byteBuffer.toByteArray()
-        } finally {
-            // close the stream
-            try {
-                byteBuffer.close()
-            } catch (ignored: IOException) {
-                /* do nothing */
-            }
-        }
-        return bytesResult
     }
 }

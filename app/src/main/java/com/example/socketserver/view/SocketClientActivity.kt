@@ -1,23 +1,23 @@
 package com.example.socketserver.view
 
+import android.Manifest
 import android.app.DownloadManager
 import android.content.ActivityNotFoundException
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.media.MediaScannerConnection
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
+import androidx.fragment.app.FragmentActivity
 import com.example.socketserver.R
-import com.example.socketserver.util.FileUtils
 import com.example.socketserver.util.Parcel
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
@@ -26,6 +26,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.ObjectInputStream
+import java.net.ConnectException
 import java.net.Socket
 import kotlin.concurrent.thread
 
@@ -55,7 +56,7 @@ class SocketClientActivity : AppCompatActivity() {
                     val qrString = result.contents
                     val ip = qrString.split(",").first()
                     val port = qrString.split(",").last().toInt()
-                    listenToServer(ip,port)
+                    ListenToServer(this,ip,port).execute()
                 }
             }else{
                 super.onActivityResult(requestCode, resultCode, data)
@@ -64,6 +65,48 @@ class SocketClientActivity : AppCompatActivity() {
             Log.e("E:oAR", e.message)
         }
 
+    }
+
+    class ListenToServer(private val activity: SocketClientActivity, private val ipAddress: String, private val port: Int) : AsyncTask<Any?, Any?, Any?>(){
+        override fun doInBackground(vararg p0: Any?): Any? {
+            try{
+                val snackbarConnecting = Snackbar.make(activity.imgReceive, "Connecting...", Snackbar.LENGTH_INDEFINITE)
+                activity.runOnUiThread { snackbarConnecting.show() }
+                val client = Socket(ipAddress, port)
+
+                val inp = ObjectInputStream(client.getInputStream())
+
+                activity.runOnUiThread { snackbarConnecting.dismiss() }
+                val snackbarReceiving = Snackbar.make(activity.imgReceive, "Receiving File...", Snackbar.LENGTH_INDEFINITE)
+                activity.runOnUiThread { snackbarReceiving.show() }
+
+                activity.messageParcel = inp.readObject() as Parcel
+                client.close()
+
+                activity.runOnUiThread { snackbarReceiving.dismiss() }
+
+                if(activity.messageParcel!!.isYTLink()){
+                    activity.openYouTube(activity.messageParcel!!.getText())
+                }else if(activity.messageParcel!!.isPdf()){
+                    if(activity.isStoragePermissionGranted()) {
+                        activity.openPdf()
+                    }
+                }
+            }catch (e : ConnectException){
+                activity.runOnUiThread {
+                    val snackbar = Snackbar.make(activity.imgReceive, "Failed to Connect", Snackbar.LENGTH_INDEFINITE)
+                        .setTextColor(ContextCompat.getColor(activity, R.color.colorWhitePure))
+                        .setActionTextColor(ContextCompat.getColor(activity, R.color.colorReceive))
+                        .setAction("CLOSE"){
+                            //do nothing
+                        }
+                    snackbar.show()
+                }
+            }catch (e : Exception){
+                Log.e("E:Lis", e.message)
+            }
+            return null
+        }
     }
 
     private fun listenToServer(ipAddress: String, port: Int){
@@ -78,7 +121,19 @@ class SocketClientActivity : AppCompatActivity() {
                 if(messageParcel!!.isYTLink()){
                     openYouTube(messageParcel!!.getText())
                 }else if(messageParcel!!.isPdf()){
-                    openPdf()
+                    if(isStoragePermissionGranted()) {
+                        openPdf()
+                    }
+                }
+            }catch (e : ConnectException){
+                runOnUiThread {
+                    val snackbar = Snackbar.make(imgReceive, "Failed to Connect. Make Sure Both Devices are Connected to the Same Wifi Network", Snackbar.LENGTH_INDEFINITE)
+                        .setTextColor(ContextCompat.getColor(this, R.color.colorWhitePure))
+                        .setActionTextColor(ContextCompat.getColor(this, R.color.colorReceive))
+                        .setAction("CLOSE"){
+                            //do nothing
+                        }
+                    snackbar.show()
                 }
             }catch (e : Exception){
                 Log.e("E:Lis", e.message)
@@ -100,7 +155,8 @@ class SocketClientActivity : AppCompatActivity() {
 
     private fun openPdf(){
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        //this is the newer version of saving the file, cannot use due to bug
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues()
             contentValues.put(MediaStore.Downloads.TITLE, messageParcel!!.getFileName())
             contentValues.put(MediaStore.Downloads.DISPLAY_NAME, messageParcel!!.getFileName())
@@ -117,6 +173,7 @@ class SocketClientActivity : AppCompatActivity() {
                         stream.close()
                         val path = FileUtils.getPathFromUri(this, uri)
                         val extUri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", File(path))
+//                        val path2 = FileUtils.getPathFromUri(this, extUri)
                         MediaScannerConnection.scanFile(
                             this,
                             arrayOf(path),
@@ -139,7 +196,7 @@ class SocketClientActivity : AppCompatActivity() {
             }catch (e: IOException){
                 e.printStackTrace()
             }
-        }else{
+        }else{*/
             val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), messageParcel!!.getFileName())
             try{
                 file.createNewFile()
@@ -149,21 +206,27 @@ class SocketClientActivity : AppCompatActivity() {
 
                 val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 downloadManager.addCompletedDownload(messageParcel!!.getFileName(), messageParcel!!.getFileName(), true, "application/pdf", file.absolutePath, file.length(), true)
-                val snackbar = Snackbar.make(imgReceive, "Pdf File Received", Snackbar.LENGTH_INDEFINITE)
+                val snackMessage = if(messageParcel!!.getPageNumber() != null){
+                    "Check Notifications for PDF. You were on page ${messageParcel!!.getPageNumber()}"
+                }else{
+                    "Check Notifications for PDF"
+                }
+                val snackbar = Snackbar.make(imgReceive, snackMessage, Snackbar.LENGTH_INDEFINITE)
                     .setTextColor(ContextCompat.getColor(this, R.color.colorWhitePure))
                     .setActionTextColor(ContextCompat.getColor(this, R.color.colorReceive))
-                    .setAction("OPEN"){
-                        openPdfExternal(Uri.fromFile(file))
+                    .setAction("CLOSE"){
+                        //do nothing
                     }
                 snackbar.show()
             }catch (e: IOException){
                 e.printStackTrace()
             }
-        }
+//        }
 
 
     }
 
+    //to open the pdf through intent from app (not used due to bug)
     private fun openPdfExternal(uri: Uri){
         val pdfIntent = Intent(Intent.ACTION_VIEW)
         pdfIntent.type = "application/pdf"
@@ -178,6 +241,34 @@ class SocketClientActivity : AppCompatActivity() {
             Toast.makeText(this, "No Application Available to View Pdf", Toast.LENGTH_LONG).show()
         }catch(e: Exception){
             e.printStackTrace()
+        }
+    }
+
+    private fun isStoragePermissionGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE).equals(PackageManager.PERMISSION_GRANTED)) {
+                true
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    1
+                )
+                false
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            openPdf()
         }
     }
 
