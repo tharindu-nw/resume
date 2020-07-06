@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
+import android.widget.Toast
 import com.example.socketserver.R
 import com.example.socketserver.util.Constants
 import com.example.socketserver.util.Parcel
@@ -33,6 +34,7 @@ class SocketServerActivity : AppCompatActivity() {
     private var webLink = ""
     private var pdfName = ""
     private var fileUri : Uri? = null
+    private var backPressedTime : Date? = null
     private lateinit var messageParcel : Parcel
     private var multiFormatWriter = MultiFormatWriter()
 
@@ -45,19 +47,23 @@ class SocketServerActivity : AppCompatActivity() {
         server = ServerSocket(9990)
 
         messageParcel = intent.getSerializableExtra(Constants.MESSAGE) as Parcel
-        if(messageParcel.isYTLink()){
-            youtubeLink = messageParcel.getText()
-            tvShareName.text = SpannableStringBuilder(youtubeLink)
-            StartListening(this).execute()
-        }else if(messageParcel.isPdf()){
-            fileUri = intent.getParcelableExtra(Constants.URI)
-            pdfName = messageParcel.getFileName()
-            tvShareName.text = SpannableStringBuilder(pdfName)
-            StartListening(this).execute()
-        }else if(messageParcel.isWebLink()){
-            webLink = messageParcel.getText()
-            tvShareName.text = SpannableStringBuilder(webLink)
-            StartListening(this).execute()
+        when {
+            messageParcel.isYTLink() -> {
+                youtubeLink = messageParcel.getText()
+                tvShareName.text = SpannableStringBuilder(youtubeLink)
+                StartListening(this).execute()
+            }
+            messageParcel.isPdf() -> {
+                fileUri = intent.getParcelableExtra(Constants.URI)
+                pdfName = messageParcel.getFileName()
+                tvShareName.text = SpannableStringBuilder(pdfName)
+                StartListening(this).execute()
+            }
+            messageParcel.isWebLink() -> {
+                webLink = messageParcel.getText()
+                tvShareName.text = SpannableStringBuilder(webLink)
+                StartListening(this).execute()
+            }
         }
 
         val qrText = "$myIp,${server.localPort}"
@@ -169,11 +175,18 @@ class SocketServerActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        startActivity(
-            Intent(this, HomeActivity::class.java)
-                .apply {
-                })
-        finish()
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
+        if(backPressedTime != null){
+            val currentTime = Calendar.getInstance().time
+            val timeDiff = currentTime.time - backPressedTime!!.time
+            if(timeDiff > 5000){
+                backPressedTime = currentTime
+                Toast.makeText(this, "Press back once again to quit", Toast.LENGTH_LONG).show()
+            }else{
+                finish()
+            }
+        }else{
+            backPressedTime = Calendar.getInstance().time
+            Toast.makeText(this, "Press back once again to quit", Toast.LENGTH_LONG).show()
+        }
     }
 }
