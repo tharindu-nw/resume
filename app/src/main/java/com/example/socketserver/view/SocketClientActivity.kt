@@ -91,6 +91,8 @@ class SocketClientActivity : AppCompatActivity() {
                     if(activity.isStoragePermissionGranted()) {
                         activity.openPdf()
                     }
+                }else if(activity.messageParcel!!.isWebLink()){
+                    activity.openWebLink(activity.messageParcel!!.getText())
                 }
             }catch (e : ConnectException){
                 activity.runOnUiThread {
@@ -109,7 +111,8 @@ class SocketClientActivity : AppCompatActivity() {
         }
     }
 
-    private fun listenToServer(ipAddress: String, port: Int){
+    //this was replaces by the AsyncTask version
+    /*private fun listenToServer(ipAddress: String, port: Int){
         thread {
             try{
                 val client = Socket(ipAddress, port)
@@ -139,7 +142,7 @@ class SocketClientActivity : AppCompatActivity() {
                 Log.e("E:Lis", e.message)
             }
         }
-    }
+    }*/
 
     private fun openYouTube(link : String){
         val ytIntent = Intent(Intent.ACTION_VIEW)
@@ -150,6 +153,17 @@ class SocketClientActivity : AppCompatActivity() {
             finish()
         }catch (e: ActivityNotFoundException){
             Toast.makeText(this, "Youtube Application Not Found", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun openWebLink(link: String){
+        val browserIntent = Intent(Intent.ACTION_VIEW)
+        browserIntent.data = Uri.parse(link)
+        try{
+            startActivity(browserIntent)
+            finish()
+        }catch (e: ActivityNotFoundException){
+            Toast.makeText(this, "Application Not Found", Toast.LENGTH_LONG).show()
         }
     }
 

@@ -4,39 +4,22 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.example.socketserver.R
 import com.example.socketserver.util.Constants
 import kotlinx.android.synthetic.main.activity_home.*
+import java.util.*
 
 class HomeActivity : AppCompatActivity() {
+
+    private var backPressedTime : Date? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        btnSendHome.setOnClickListener {
-            openServer()
-        }
-
         btnReceiveHome.setOnClickListener {
             openSocket()
-        }
-
-        btnShareHome.setOnClickListener {
-            openShare()
-        }
-    }
-
-    private fun openServer(){
-        try{
-            startActivity(Intent(this, SocketServerActivity::class.java)
-                .apply {
-                    putExtra(Constants.ORIGIN, HOME)
-                })
-            finish()
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left)
-        }catch (err : Exception){
-            Log.e("Server", err.message)
         }
     }
 
@@ -52,15 +35,20 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun openShare(){
-        startActivity(Intent(this, YoutubeShareDialogActivity::class.java)
-            .apply {
-            })
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-    }
-
     override fun onBackPressed() {
-        //do nothing
+        if(backPressedTime != null){
+            val currentTime = Calendar.getInstance().time
+            val timeDiff = currentTime.time - backPressedTime!!.time
+            if(timeDiff > 5000){
+                backPressedTime = currentTime
+                Toast.makeText(this, "Press back once again to quit", Toast.LENGTH_LONG).show()
+            }else{
+                finish()
+            }
+        }else{
+            backPressedTime = Calendar.getInstance().time
+            Toast.makeText(this, "Press back once again to quit", Toast.LENGTH_LONG).show()
+        }
     }
 
     companion object{

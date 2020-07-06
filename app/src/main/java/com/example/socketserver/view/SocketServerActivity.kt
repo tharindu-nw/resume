@@ -27,10 +27,10 @@ import java.util.*
 
 class SocketServerActivity : AppCompatActivity() {
 
-    var ipAddress = ""
     var server = ServerSocket()
 
     private var youtubeLink = ""
+    private var webLink = ""
     private var pdfName = ""
     private var fileUri : Uri? = null
     private lateinit var messageParcel : Parcel
@@ -53,6 +53,10 @@ class SocketServerActivity : AppCompatActivity() {
             fileUri = intent.getParcelableExtra(Constants.URI)
             pdfName = messageParcel.getFileName()
             tvShareName.text = SpannableStringBuilder(pdfName)
+            StartListening(this).execute()
+        }else if(messageParcel.isWebLink()){
+            webLink = messageParcel.getText()
+            tvShareName.text = SpannableStringBuilder(webLink)
             StartListening(this).execute()
         }
 

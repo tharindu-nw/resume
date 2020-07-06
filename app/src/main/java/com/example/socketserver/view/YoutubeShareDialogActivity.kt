@@ -18,6 +18,7 @@ import java.lang.NumberFormatException
 class YoutubeShareDialogActivity : AppCompatActivity() {
 
     private var link = ""
+    private var isYoutube = false
     private var hrs = 0
     private var mins = 0
     private var secs = 0
@@ -28,17 +29,30 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
 
         link = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
         tvLinkYT.text = link
+        checkLink()
 
         btnShare.setOnClickListener {
             //if user opts to share with timestamp, time input needs to be validated
-            validateInput()
+            if(isYoutube){
+                validateInput()
+            }else{
+                val message = Parcel(link, false)
+                message.setIsWebLink(true)
+                openServer(message)
+            }
         }
 
         btnShareWT.setOnClickListener {
             //if there is no time input, share the link straight through
-            val message = Parcel(link, false)
-            message.setIsYTLink(true)
-            openServer(message)
+            if(isYoutube){
+                val message = Parcel(link, false)
+                message.setIsYTLink(true)
+                openServer(message)
+            }else{
+                val message = Parcel(link, false)
+                message.setIsWebLink(true)
+                openServer(message)
+            }
         }
 
         edtxtHr.addTextChangedListener(object : TextWatcher {
@@ -76,6 +90,10 @@ class YoutubeShareDialogActivity : AppCompatActivity() {
                 edtxtSec.isActivated = false
             }
         })
+    }
+
+    private fun checkLink(){
+        isYoutube = link.contains("youtube.com") || link.contains("youtu.be")
     }
 
     private fun validateInput(){

@@ -2,7 +2,7 @@
     <string name="app_name">SocketServer</string>
 
     <string name="btn_txt_Home_Send">Send</string>
-    <string name="btn_txt_Home_receive">Receive</string>
+    <string name="btn_txt_Home_receive">Receive File</string>
 
     <string name="tv_placeholder_message" translatable="true">Waiting for message from client…</string>
     <string name="tv_placeholder_ip_address" translatable="true">Server running on…</string>
@@ -10,7 +10,7 @@
     <string name="btn_txt_Client_connect">Scan QR Code</string>
 
     <string name="tv_title_dialog">Share With Resume</string>
-    <string name="tv_time_dialog">Enter Timestamp:</string>
+    <string name="tv_time_dialog">Enter Timestamp (Only for YouTube Videos):</string>
     <string name="tv_hr_dialog">hr</string>
     <string name="tv_min_dialog">min</string>
     <string name="tv_sec_dialog">sec</string>
@@ -22,8 +22,13 @@
 
     <string name="tv_title_server">Share</string>
     <string name="tv_rtoshare_server">Ready to share:</string>
-    <string name="tv_inst_server">1. Open Resume on your other device\n2. Choose \"Receive Link/File\"\n3. Scan the QR code</string>
+    <string name="tv_inst_server">1. Make sure both devices are connected to the same Wifi network\n2. Choose \"Receive Link/File\" on the other device\n3. Scan the QR code</string>
 
     <string name="tv_title_receive">Receive</string>
-    <string name="tv_desc_receive">1. Share the file from your other device\n2. Share screen will show a QR code\n3. Click the button below to scan the QR code</string>
+    <string name="tv_desc_receive">1. Make sure both devices are connected to the same Wifi network\n2. Share the file from the other device\n3. Click the button below to scan the QR code</string>
+    <string name="tv_title_home">Resume</string>
+    <string name="tv_num1_home">1</string>
+    <string name="tv_num2_home">2</string>
+    <string name="tv_ins1_home">Choose Resume from the share menu to share the file</string>
+    <string name="tv_ins2_home">Scan the QR code to receive the file</string>
 </resources>
