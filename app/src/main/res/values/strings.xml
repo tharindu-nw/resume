@@ -22,7 +22,7 @@
 
     <string name="tv_title_server">Share</string>
     <string name="tv_rtoshare_server">Ready to share:</string>
-    <string name="tv_inst_server">1. Make sure both devices are connected to the same Wifi network\n2. Choose \"Receive Link/File\" on the other device\n3. Scan the QR code</string>
+    <string name="tv_inst_server">1. Make sure both devices are connected to the same Wifi network\n2. Choose \"Receive File\" on the other device\n3. Scan the QR code</string>
 
     <string name="tv_title_receive">Receive</string>
     <string name="tv_desc_receive">1. Make sure both devices are connected to the same Wifi network\n2. Share the file from the other device\n3. Click the button below to scan the QR code</string>

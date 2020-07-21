@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import com.example.socketserver.R
 import com.example.socketserver.util.Parcel
 import com.google.android.material.snackbar.Snackbar
@@ -28,12 +27,10 @@ import java.io.IOException
 import java.io.ObjectInputStream
 import java.net.ConnectException
 import java.net.Socket
-import kotlin.concurrent.thread
 
 class SocketClientActivity : AppCompatActivity() {
 
     private lateinit var qrScan : IntentIntegrator
-    private var ytLink = ""
     private var messageParcel : Parcel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,14 +67,14 @@ class SocketClientActivity : AppCompatActivity() {
     class ListenToServer(private val activity: SocketClientActivity, private val ipAddress: String, private val port: Int) : AsyncTask<Any?, Any?, Any?>(){
         override fun doInBackground(vararg p0: Any?): Any? {
             try{
-                val snackbarConnecting = Snackbar.make(activity.imgReceive, "Connecting...", Snackbar.LENGTH_INDEFINITE)
+                val snackbarConnecting = Snackbar.make(activity.imgReceive, "Connecting... Do Not Close the App", Snackbar.LENGTH_INDEFINITE)
                 activity.runOnUiThread { snackbarConnecting.show() }
                 val client = Socket(ipAddress, port)
 
                 val inp = ObjectInputStream(client.getInputStream())
 
                 activity.runOnUiThread { snackbarConnecting.dismiss() }
-                val snackbarReceiving = Snackbar.make(activity.imgReceive, "Receiving File...", Snackbar.LENGTH_INDEFINITE)
+                val snackbarReceiving = Snackbar.make(activity.imgReceive, "Receiving File... Do Not Close the App", Snackbar.LENGTH_INDEFINITE)
                 activity.runOnUiThread { snackbarReceiving.show() }
 
                 activity.messageParcel = inp.readObject() as Parcel
@@ -221,9 +218,9 @@ class SocketClientActivity : AppCompatActivity() {
                 val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 downloadManager.addCompletedDownload(messageParcel!!.getFileName(), messageParcel!!.getFileName(), true, "application/pdf", file.absolutePath, file.length(), true)
                 val snackMessage = if(messageParcel!!.getPageNumber() != null){
-                    "Check Notifications for PDF. You were on page ${messageParcel!!.getPageNumber()}"
+                    "File Received. Check Notifications for PDF. You were on page ${messageParcel!!.getPageNumber()}"
                 }else{
-                    "Check Notifications for PDF"
+                    "File Received. Check Notifications for PDF"
                 }
                 val snackbar = Snackbar.make(imgReceive, snackMessage, Snackbar.LENGTH_INDEFINITE)
                     .setTextColor(ContextCompat.getColor(this, R.color.colorWhitePure))

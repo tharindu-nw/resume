@@ -1,14 +1,18 @@
 package com.example.socketserver.view
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import com.example.socketserver.R
 import com.example.socketserver.util.Constants
 import com.example.socketserver.util.Parcel
@@ -47,24 +51,7 @@ class SocketServerActivity : AppCompatActivity() {
         server = ServerSocket(9990)
 
         messageParcel = intent.getSerializableExtra(Constants.MESSAGE) as Parcel
-        when {
-            messageParcel.isYTLink() -> {
-                youtubeLink = messageParcel.getText()
-                tvShareName.text = SpannableStringBuilder(youtubeLink)
-                StartListening(this).execute()
-            }
-            messageParcel.isPdf() -> {
-                fileUri = intent.getParcelableExtra(Constants.URI)
-                pdfName = messageParcel.getFileName()
-                tvShareName.text = SpannableStringBuilder(pdfName)
-                StartListening(this).execute()
-            }
-            messageParcel.isWebLink() -> {
-                webLink = messageParcel.getText()
-                tvShareName.text = SpannableStringBuilder(webLink)
-                StartListening(this).execute()
-            }
-        }
+        processParcel()
 
         val qrText = "$myIp,${server.localPort}"
         try{
@@ -78,6 +65,29 @@ class SocketServerActivity : AppCompatActivity() {
         StartListening(this).execute()
     }
 
+    private fun processParcel(){
+        if(isStoragePermissionGranted()){
+            when {
+                messageParcel.isYTLink() -> {
+                    youtubeLink = messageParcel.getText()
+                    tvShareName.text = SpannableStringBuilder(youtubeLink)
+                    StartListening(this).execute()
+                }
+                messageParcel.isPdf() -> {
+                    fileUri = intent.getParcelableExtra(Constants.URI)
+                    pdfName = messageParcel.getFileName()
+                    tvShareName.text = SpannableStringBuilder(pdfName)
+                    StartListening(this).execute()
+                }
+                messageParcel.isWebLink() -> {
+                    webLink = messageParcel.getText()
+                    tvShareName.text = SpannableStringBuilder(webLink)
+                    StartListening(this).execute()
+                }
+            }
+        }
+    }
+
     class StartListening(private val activity: SocketServerActivity) : AsyncTask<Any?, Any?, Any?>(){
         override fun doInBackground(vararg params: Any?) {
             while(true){
@@ -85,7 +95,7 @@ class SocketServerActivity : AppCompatActivity() {
                     val client = activity.server.accept()
 
                     if(activity.messageParcel.isPdf()){
-                        val snackbarFile = Snackbar.make(activity.imgShare, "Preparing File", Snackbar.LENGTH_INDEFINITE)
+                        val snackbarFile = Snackbar.make(activity.imgShare, "Preparing File. Do Not Close the App", Snackbar.LENGTH_INDEFINITE)
                         activity.runOnUiThread { snackbarFile.show() }
                         val file = activity.getBytes(activity, activity.fileUri!!)
                         activity.messageParcel.setFile(file!!)
@@ -172,6 +182,35 @@ class SocketServerActivity : AppCompatActivity() {
             }
         }
         return bytesResult
+    }
+
+    private fun isStoragePermissionGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE).equals(
+                    PackageManager.PERMISSION_GRANTED)) {
+                true
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    1
+                )
+                false
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            processParcel()
+        }
     }
 
     override fun onBackPressed() {
