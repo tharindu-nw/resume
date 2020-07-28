@@ -35,6 +35,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:statusBarColor">@color/colorBlueIris</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
 
     <style name="button_text_appearance">
