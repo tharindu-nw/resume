@@ -108,39 +108,6 @@ class SocketClientActivity : AppCompatActivity() {
         }
     }
 
-    //this was replaces by the AsyncTask version
-    /*private fun listenToServer(ipAddress: String, port: Int){
-        thread {
-            try{
-                val client = Socket(ipAddress, port)
-
-                val inp = ObjectInputStream(client.getInputStream())
-                messageParcel = inp.readObject() as Parcel
-                client.close()
-
-                if(messageParcel!!.isYTLink()){
-                    openYouTube(messageParcel!!.getText())
-                }else if(messageParcel!!.isPdf()){
-                    if(isStoragePermissionGranted()) {
-                        openPdf()
-                    }
-                }
-            }catch (e : ConnectException){
-                runOnUiThread {
-                    val snackbar = Snackbar.make(imgReceive, "Failed to Connect. Make Sure Both Devices are Connected to the Same Wifi Network", Snackbar.LENGTH_INDEFINITE)
-                        .setTextColor(ContextCompat.getColor(this, R.color.colorWhitePure))
-                        .setActionTextColor(ContextCompat.getColor(this, R.color.colorReceive))
-                        .setAction("CLOSE"){
-                            //do nothing
-                        }
-                    snackbar.show()
-                }
-            }catch (e : Exception){
-                Log.e("E:Lis", e.message)
-            }
-        }
-    }*/
-
     private fun openYouTube(link : String){
         val ytIntent = Intent(Intent.ACTION_VIEW)
         ytIntent.data = Uri.parse(link)

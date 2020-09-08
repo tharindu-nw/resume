@@ -47,7 +47,6 @@ class SocketServerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_socket_server)
 
         val myIp = getIPAddress(true)
-
         server = ServerSocket(9990)
 
         messageParcel = intent.getSerializableExtra(Constants.MESSAGE) as Parcel
